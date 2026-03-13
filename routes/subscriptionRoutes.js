@@ -8,11 +8,12 @@ import {
   updateSubscription,
   deleteSubscription
 } from "../controllers/subscriptionController.js";
+import { validateSubscription } from "../validators/subscriptionValidator.js";
 
 const router = express.Router();
 
 // CREATE subscription
-router.post("/", authMiddleware, createSubscription);
+router.post("/", authMiddleware,validateSubscription, createSubscription);
 
 // GET all subscriptions (user connected)
 router.get("/", authMiddleware, getSubscriptions);
@@ -21,7 +22,7 @@ router.get("/", authMiddleware, getSubscriptions);
 router.get("/:id", authMiddleware, getSubscription);
 
 // UPDATE subscription
-router.put("/:id", authMiddleware, updateSubscription);
+router.put("/:id", authMiddleware,validateSubscription, updateSubscription);
 
 // DELETE subscription
 router.delete("/:id", authMiddleware, deleteSubscription);

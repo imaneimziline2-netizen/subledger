@@ -6,7 +6,7 @@ import validateRole from "../middleware/validateRoleMiddleware.js";
 
 const router = express.Router();
 
-router.post("/register", validateRole, register);
+router.post("/register", validateRole,register);
 router.post("/login", login);
 
 // route admin pour lister tous les utilisateurs

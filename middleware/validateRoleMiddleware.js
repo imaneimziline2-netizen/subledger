@@ -9,7 +9,7 @@ const validateRole = async (req, res, next) => {
 
             if (existingAdmin) {
                 return res.status(403).json({
-                    message: "chooof assi ra kaaaayn admin deja siiiir tl3eb.",
+                    message: "admin déja existe.",
                 });
             }
         }
