@@ -3,29 +3,30 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
+    try {
+        const { name, email, password, role } = req.body;
 
-    // vérifier si email déjà existant
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "Email déjà utilisé" });
+        // vérifier si email déjà existant
+        const existingUser = await User.findOne({ email });
+        if (existingUser)
+            return res.status(400).json({ message: "Email déjà utilisé" });
 
-    // hasher le mot de passe
-    const hashedPassword = await bcrypt.hash(password, 10);
+        // hasher le mot de passe
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword
-    });
+        const newUser = new User({
+            name,
+            email,
+            password: hashedPassword,
+            role,
+        });
 
-    await newUser.save();
+        await newUser.save();
 
-    res.status(201).json({ message: "Utilisateur créé avec succès" });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+        res.status(201).json({ message: "Utilisateur créé avec succès" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
 export const login = async (req, res) => {
@@ -54,6 +55,8 @@ export const login = async (req, res) => {
                 expiresIn: "1D",
             },
         );
+
+        res.setHeader("Authorization", `Bearer ${token}`);
         res.status(200).json({ message: "login success", token });
     } catch (error) {
         return res.status(400).json({ message: error.message });
@@ -62,11 +65,11 @@ export const login = async (req, res) => {
 
 // get all users (Admin seulement)
 export const getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find().select("-password"); 
-    // ne retourne pas les mots de passe
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+    try {
+        const users = await User.find().select("-password");
+        // ne retourne pas les mots de passe
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
