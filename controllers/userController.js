@@ -1,12 +1,37 @@
+import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import userModel from "../models/userModel.js";
-import { json } from "express";
+
+export const register = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    // vérifier si email déjà existant
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return res.status(400).json({ message: "Email déjà utilisé" });
+
+    // hasher le mot de passe
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword
+    });
+
+    await newUser.save();
+
+    res.status(201).json({ message: "Utilisateur créé avec succès" });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await userModel.findOne({ email });
+        const user = await User.findOne({ email });
 
         if (!user) {
             return res.status(404).json({ message: "user not found" });
@@ -35,4 +60,13 @@ export const login = async (req, res) => {
     }
 };
 
-export const register = () => {};
+// get all users (Admin seulement)
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password"); 
+    // ne retourne pas les mots de passe
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

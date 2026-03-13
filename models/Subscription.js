@@ -1,25 +1,16 @@
-import { required, string } from "joi";
-import mongoose  from "mongoose";
+import mongoose from "mongoose";
 
-const subscriptionScema = new mongoose.Schema({
-    name:{
-       type :string,
-        required:true
-    },
-    price:{
-        type :Number,
-    },
-    billingCycle:{
-        type:string,
-        enum :["monthly"," yearly"]
-    },
+const subscriptionSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    price: { type: Number, required: true },
+    billingCycle: { type: String, enum: ["monthly", "yearly"], required: true },
     userId: {
-        
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-    }
-})
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
+    createdAt: { type: Date, default: Date.now },
+});
 
-const subscription =mongoose.model("subscription",subscriptionScema)
-export default subscriptionScema;
-  
+const Subscription = mongoose.model("Subscription", subscriptionSchema);
+export default Subscription;
